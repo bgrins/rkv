@@ -18,6 +18,7 @@ use std::thread::ThreadId;
 use failure::Fail;
 
 pub use crate::backend::SafeModeError;
+pub use crate::backend::SqliteError;
 use crate::value::Type;
 
 #[derive(Debug, Fail)]
@@ -91,6 +92,9 @@ pub enum StoreError {
     #[fail(display = "safe mode backend error: {}", _0)]
     SafeModeError(SafeModeError),
 
+    #[fail(display = "sqlite backend error: {}", _0)]
+    SqliteError(SqliteError),
+
     #[fail(display = "read transaction already exists in thread {:?}", _0)]
     ReadTransactionAlreadyExists(ThreadId),
 
@@ -161,6 +165,9 @@ pub enum MigrateError {
     #[fail(display = "safe mode backend error: {}", _0)]
     SafeModeError(SafeModeError),
 
+    #[fail(display = "sqlite backend error: {}", _0)]
+    SqliteError(SqliteError),
+
     #[fail(display = "string conversion error")]
     StringConversionError,
 
@@ -219,5 +226,11 @@ impl From<lmdb::Error> for MigrateError {
 impl From<SafeModeError> for MigrateError {
     fn from(e: SafeModeError) -> MigrateError {
         MigrateError::SafeModeError(e)
+    }
+}
+
+impl From<SqliteError> for MigrateError {
+    fn from(e: SqliteError) -> MigrateError {
+        MigrateError::SqliteError(e)
     }
 }

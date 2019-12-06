@@ -11,6 +11,7 @@
 mod common;
 mod impl_lmdb;
 mod impl_safe;
+mod impl_sqlite;
 mod traits;
 
 pub use common::*;
@@ -60,4 +61,27 @@ pub use impl_safe::{
 pub use impl_safe::{
     RoTransactionImpl as SafeModeRoTransaction,
     RwTransactionImpl as SafeModeRwTransaction,
+};
+
+pub use impl_sqlite::DatabaseImpl as SqliteDatabase;
+pub use impl_sqlite::EnvironmentBuilderImpl as Sqlite;
+pub use impl_sqlite::EnvironmentImpl as SqliteEnvironment;
+pub use impl_sqlite::ErrorImpl as SqliteError;
+pub use impl_sqlite::IterImpl as SqliteIter;
+pub use impl_sqlite::{
+    DatabaseFlagsImpl as SqliteDatabaseFlags,
+    EnvironmentFlagsImpl as SqliteEnvironmentFlags,
+    WriteFlagsImpl as SqliteWriteFlags,
+};
+pub use impl_sqlite::{
+    InfoImpl as SqliteInfo,
+    StatImpl as SqliteStat,
+};
+pub use impl_sqlite::{
+    RoCursorImpl as SqliteRoCursor,
+    RwCursorImpl as SqliteRwCursor,
+};
+pub use impl_sqlite::{
+    RoTransactionImpl as SqliteRoTransaction,
+    RwTransactionImpl as SqliteRwTransaction,
 };
