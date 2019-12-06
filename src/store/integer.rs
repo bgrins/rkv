@@ -541,6 +541,75 @@ mod tests_safe {
     }
 }
 
+#[cfg(test)]
+mod tests_russqlite {
+    use std::fs;
+    use tempfile::Builder;
+
+    use super::*;
+    use crate::*;
+
+    use rusqlite::{ Connection, NO_PARAMS, Result };
+
+    #[test]
+    fn test_rusqlite_sample_usage() {
+        match print_dir_contents() {
+            Ok(_) => assert!(true),
+            Err(_) => assert!(false),
+        }
+    }
+
+    fn print_dir_contents() -> Result<()> {
+
+        // Temporary database file for the test:
+        Builder::new().prefix("test_integer_keys").tempdir().expect("tempdir");
+        let file = Builder::new().prefix("test_sqlite").tempfile().expect(("tempfile"));
+        let conn = Connection::open(file.path()).unwrap();
+
+        // Or, put a db in working dir to inspect later:
+        // let conn = Connection::open("myfile.db").unwrap();
+
+        conn.execute("CREATE TABLE IF NOT EXISTS wordcount(
+            word TEXT PRIMARY KEY,
+            cnt INTEGER
+            ) WITHOUT ROWID
+        ", NO_PARAMS).unwrap();
+
+        conn.execute("CREATE TABLE IF NOT EXISTS person (
+            id INTEGER PRIMARY KEY,
+            name TEXT NOT NULL,
+            email TEXT NOT NULL
+          )", NO_PARAMS).unwrap();
+
+        let name: String = "Example".to_string();
+        let email: String = "example@example.org".to_string();
+        conn.execute("INSERT INTO person (name, email) VALUES (?1, ?2)",
+            &[&name, &email]).unwrap();
+
+        #[derive(Debug)]
+        struct Person {
+            id: i32,
+            name: String,
+            email: String,
+        }
+
+        let mut stmt = conn.prepare("SELECT id, name, email FROM person")?;
+        let person_iter = stmt.query_map(NO_PARAMS, |row| {
+            Ok(Person {
+                id: row.get(0)?,
+                name: row.get(1)?,
+                email: row.get(2)?,
+            })
+        })?;
+
+        for person in person_iter {
+            println!("Found person {:?}", person.unwrap());
+        }
+
+        Ok(())
+    }
+}
+
 // XXX: DRY these tests by having one `mod` and looping through three backends?
 #[cfg(test)]
 mod tests_sqlite {
