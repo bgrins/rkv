@@ -542,7 +542,7 @@ mod tests_safe {
 }
 
 #[cfg(test)]
-mod tests_russqlite {
+mod tests_rusqlite {
     use std::fs;
     use tempfile::Builder;
 
@@ -563,7 +563,7 @@ mod tests_russqlite {
 
         // Temporary database file for the test:
         Builder::new().prefix("test_integer_keys").tempdir().expect("tempdir");
-        let file = Builder::new().prefix("test_sqlite").tempfile().expect(("tempfile"));
+        let file = Builder::new().prefix("test_sqlite").tempfile().expect("tempfile");
         let conn = Connection::open(file.path()).unwrap();
 
         // Or, put a db in working dir to inspect later:
@@ -581,10 +581,15 @@ mod tests_russqlite {
             email TEXT NOT NULL
           )", NO_PARAMS).unwrap();
 
-        let name: String = "Example".to_string();
-        let email: String = "example@example.org".to_string();
+        let first_name: String = "Example".to_string();
+        let first_email: String = "example@example.org".to_string();
         conn.execute("INSERT INTO person (name, email) VALUES (?1, ?2)",
-            &[&name, &email]).unwrap();
+            &[&first_name, &first_email]).unwrap();
+
+        let second_name: String = "Foo".to_string();
+        let second_email: String = "foo@example.org".to_string();
+        conn.execute("INSERT INTO person (name, email) VALUES (?1, ?2)",
+            &[&second_name, &second_email]).unwrap();
 
         #[derive(Debug)]
         struct Person {
@@ -594,7 +599,7 @@ mod tests_russqlite {
         }
 
         let mut stmt = conn.prepare("SELECT id, name, email FROM person")?;
-        let person_iter = stmt.query_map(NO_PARAMS, |row| {
+        let mut person_iter = stmt.query_map(NO_PARAMS, |row| {
             Ok(Person {
                 id: row.get(0)?,
                 name: row.get(1)?,
@@ -602,9 +607,18 @@ mod tests_russqlite {
             })
         })?;
 
-        for person in person_iter {
-            println!("Found person {:?}", person.unwrap());
-        }
+        let first_person = person_iter.next().unwrap().unwrap();
+        assert_eq!(first_person.name, first_name);
+        assert_eq!(first_person.email, first_email);
+        assert_eq!(first_person.id, 1);
+
+        let second_person = person_iter.next().unwrap().unwrap();
+        assert_eq!(second_person.name, second_name);
+        assert_eq!(second_person.email, second_email);
+        assert_eq!(second_person.id, 2);
+        // for person in person_iter {
+        //     println!("Found person {:?}", person.unwrap());
+        // }
 
         Ok(())
     }
