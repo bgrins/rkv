@@ -19,6 +19,7 @@ impl<'i> BackendIter<'i> for IterImpl<'i> {
 
     #[allow(clippy::type_complexity)]
     fn next(&mut self) -> Option<Result<(&'i [u8], &'i [u8]), Self::Error>> {
-        self.0.next().map(Ok)
+        unimplemented!()
+        // self.0.next().map(Ok)
     }
 }

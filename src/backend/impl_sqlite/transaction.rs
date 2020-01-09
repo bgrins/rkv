@@ -91,8 +91,9 @@ impl<'t> BackendRwTransaction for RwTransactionImpl<'t> {
     type Flags = WriteFlagsImpl;
 
     fn get(&self, db: &Self::Database, key: &[u8]) -> Result<&[u8], Self::Error> {
-        let snapshot = self.snapshots.get(db).ok_or_else(|| ErrorImpl::DbIsForeignError)?;
-        snapshot.get(key).ok_or_else(|| ErrorImpl::KeyValuePairNotFound)
+        unimplemented!()
+        // let snapshot = self.snapshots.get(db).ok_or_else(|| ErrorImpl::DbIsForeignError)?;
+        // snapshot.get(key).ok_or_else(|| ErrorImpl::KeyValuePairNotFound)
     }
 
     #[cfg(not(feature = "db-dup-sort"))]

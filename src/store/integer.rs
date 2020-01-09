@@ -562,12 +562,12 @@ mod tests_rusqlite {
     fn print_dir_contents() -> Result<()> {
 
         // Temporary database file for the test:
-        Builder::new().prefix("test_integer_keys").tempdir().expect("tempdir");
-        let file = Builder::new().prefix("test_sqlite").tempfile().expect("tempfile");
-        let conn = Connection::open(file.path()).unwrap();
+        // Builder::new().prefix("test_integer_keys").tempdir().expect("tempdir");
+        // let file = Builder::new().prefix("test_sqlite").tempfile().expect("tempfile");
+        // let conn = Connection::open(file.path()).unwrap();
 
         // Or, put a db in working dir to inspect later:
-        // let conn = Connection::open("myfile.db").unwrap();
+        let conn = Connection::open("myfile.db").unwrap();
 
         conn.execute("CREATE TABLE IF NOT EXISTS wordcount(
             word TEXT PRIMARY KEY,
