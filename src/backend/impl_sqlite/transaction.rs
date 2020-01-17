@@ -98,6 +98,8 @@ impl<'t> BackendRwTransaction for RwTransactionImpl<'t> {
 
     #[cfg(not(feature = "db-dup-sort"))]
     fn put(&mut self, db: &Self::Database, key: &[u8], value: &[u8], _flags: Self::Flags) -> Result<(), Self::Error> {
+        // See https://docs.rs/rusqlite/0.13.0/rusqlite/blob/index.html
+        // blob.open / blob.write
         let snapshot = self.snapshots.get_mut(db).ok_or_else(|| ErrorImpl::DbIsForeignError)?;
         snapshot.put(key, value);
         Ok(())

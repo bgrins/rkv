@@ -197,29 +197,33 @@ impl<'e> BackendEnvironment<'e> for EnvironmentImpl {
     type RwTransaction = RwTransactionImpl<'e>;
 
     fn open_db(&self, name: Option<&str>) -> Result<Self::Database, Self::Error> {
-        if Arc::strong_count(&self.ro_txns) > 1 {
-            return Err(ErrorImpl::DbsIllegalOpen);
-        }
-        // TOOD: don't reallocate `name`.
-        let key = name.map(String::from);
-        let dbs = self.dbs.read().map_err(|_| ErrorImpl::EnvPoisonError)?;
-        let id = dbs.get(&key).ok_or(ErrorImpl::DbNotFoundError)?;
-        Ok(*id)
+        // `name` is a DB name
+        unimplemented!()
+        // if Arc::strong_count(&self.ro_txns) > 1 {
+        //     return Err(ErrorImpl::DbsIllegalOpen);
+        // }
+        // // TOOD: don't reallocate `name`.
+        // let key = name.map(String::from);
+        // let dbs = self.dbs.read().map_err(|_| ErrorImpl::EnvPoisonError)?;
+        // let id = dbs.get(&key).ok_or(ErrorImpl::DbNotFoundError)?;
+        // Ok(*id)
     }
 
     fn create_db(&self, name: Option<&str>, flags: Self::Flags) -> Result<Self::Database, Self::Error> {
-        if Arc::strong_count(&self.ro_txns) > 1 {
-            return Err(ErrorImpl::DbsIllegalOpen);
-        }
-        // TOOD: don't reallocate `name`.
-        let key = name.map(String::from);
-        let mut dbs = self.dbs.write().map_err(|_| ErrorImpl::EnvPoisonError)?;
-        let mut arena = self.arena.write().map_err(|_| ErrorImpl::EnvPoisonError)?;
-        if dbs.keys().filter_map(|k| k.as_ref()).count() >= self.max_dbs {
-            return Err(ErrorImpl::DbsFull);
-        }
-        let id = dbs.entry(key).or_insert_with(|| DatabaseImpl(arena.alloc(Database::new(Some(flags), None))));
-        Ok(*id)
+
+        unimplemented!()
+        // if Arc::strong_count(&self.ro_txns) > 1 {
+        //     return Err(ErrorImpl::DbsIllegalOpen);
+        // }
+        // // TOOD: don't reallocate `name`.
+        // let key = name.map(String::from);
+        // let mut dbs = self.dbs.write().map_err(|_| ErrorImpl::EnvPoisonError)?;
+        // let mut arena = self.arena.write().map_err(|_| ErrorImpl::EnvPoisonError)?;
+        // if dbs.keys().filter_map(|k| k.as_ref()).count() >= self.max_dbs {
+        //     return Err(ErrorImpl::DbsFull);
+        // }
+        // let id = dbs.entry(key).or_insert_with(|| DatabaseImpl(arena.alloc(Database::new(Some(flags), None))));
+        // Ok(*id)
     }
 
     fn begin_ro_txn(&'e self) -> Result<Self::RoTransaction, Self::Error> {
